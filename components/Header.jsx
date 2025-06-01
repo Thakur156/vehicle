@@ -4,9 +4,11 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { ArrowLeft, CarFront } from "lucide-react";
+import { checkUser } from "@/lib/checkuser";
 
 const Header = async ({ isAdminPage = false }) => {
-  const isAdmin = false;
+  const user = await checkUser();
+  const isAdmin = user?.role === "ADMIN";
   return (
     <div>
       <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
@@ -46,17 +48,17 @@ const Header = async ({ isAdminPage = false }) => {
                   </Button>
                 </Link>
                 {isAdmin ? (
-                  <Link href={"/reservations"}>
-                    <Button variant={"outline"}>
-                      <CarFront size={18} />
-                      <span className="hidden md:inline">My Reservations</span>
-                    </Button>
-                  </Link>
-                ) : (
                   <Link href={"/admin"}>
                     <Button variant={"outline"}>
                       <CarFront size={18} />
                       <span className="hidden md:inline">Admin portal</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href={"/reservations"}>
+                    <Button variant={"outline"}>
+                      <CarFront size={18} />
+                      <span className="hidden md:inline">My Reservations</span>
                     </Button>
                   </Link>
                 )}

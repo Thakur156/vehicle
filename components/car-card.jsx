@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 const CarCard = ({ car }) => {
   const [saved, setSaved] = useState(car.whishlisted);
-  const router=useRouter()
+  const router = useRouter();
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition group ">

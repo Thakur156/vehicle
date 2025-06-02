@@ -1,4 +1,9 @@
+import { db } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase";
+import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { cookies } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
 async function fileToBase64(file) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
@@ -97,4 +102,33 @@ export async function processCarImageWithAI(file) {
   } catch (error) {
     throw new Error("Gemini API error:" + error.messgae);
   }
+}
+
+export async function addCar({ carData, images }) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+    const user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+    if (!user) {
+      throw new Error("User not Found");
+    }
+    const carId = uuidv4();
+    const folderPath = `cars/${carId}`;
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const imageUrls = [];
+
+    for (let i = 0; i < images.length; i++) {
+      const base64Data = images[i];
+      if (!base64Data || !base64Data.startsWith("data:image/")) {
+        console.warn("Skipping invalid image data");
+        continue;
+      }
+      // Extract the base64 part (remove the data:image/xyz;base64, prefix)
+      const base64 = base64Data.split(",")[1];
+    }
+  } catch (error) {}
 }
